@@ -1,0 +1,26 @@
+version: "2.0"
+stories:
+- story: greet user
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- story: provide data summary
+  steps:
+  - intent: ask_summary
+  - action: action_summary
+
+- story: provide data head
+  steps:
+  - intent: ask_head
+  - action: action_head
+
+- story: provide data plot
+  steps:
+  - intent: ask_plot
+  - action: action_plot
+
+- story: upload file
+  steps:
+  - intent: upload_file
+  - action: action_upload_file

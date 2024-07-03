@@ -1,0 +1,30 @@
+version: "2.0"
+
+intents:
+  - greet
+  - ask_summary
+  - ask_plot
+  - ask_head
+  - upload_file
+
+responses:
+  utter_greet:
+    - text: "Hello! How can I help you with the data today?"
+
+  utter_summary:
+    - text: "Here is the summary of the data: {summary}"
+
+  utter_plot:
+    - text: "Here is the plot of the data: {plot_url}"
+
+slots:
+  file_path:
+    type: text
+  column:
+    type: text
+
+actions:
+  - action_summary
+  - action_head
+  - action_plot
+  - action_upload_file

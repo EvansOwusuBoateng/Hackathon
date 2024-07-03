@@ -1,0 +1,19 @@
+version: "2.0"
+nlu:
+- intent: greet
+  examples: |
+    - hello
+    - hi
+    - hey
+
+- intent: ask_summary
+  examples: |
+    - Give me a summary of the data
+    - What are the summary statistics?
+    - Provide a data summary
+
+- intent: ask_plot
+  examples: |
+    - Show me a plot of the data
+    - Can you visualize the data?
+    - Plot the data for me
