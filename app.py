@@ -1,86 +1,51 @@
-import os
+from flask import Flask, render_template, request, redirect, url_for, g
+from werkzeug.utils import secure_filename
+from pathlib import Path
 import pandas as pd
-from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 app = Flask(__name__)
-CORS(app)
 
+# Define the upload folder and allowed extensions
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'csv'}
 
-# Route for the home page
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Create the uploads folder if it doesn't exist
+Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
+
 @app.route('/')
-def home():
-    return render_template('index.html', title='Data Analysis Tool with Chatbot')
+def index():
+    return render_template('index.html', title='FoodYum Dashboard')
 
 
-# Route to handle file upload
+@app.route('/dash/')
+def render_dash():
+    # This import is placed here to avoid circular import issues
+    from dashboard import dash_app
+    return dash_app.index()
+
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
-
-    file = request.files['file']
-
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join('uploads', filename)
-        file.save(filepath)
-        data = pd.read_csv(filepath)
-        summary_stats = data.describe().to_dict()
-        first_rows = data.head().to_dict(orient='records')
-
-        return jsonify({
-            'summary_statistics': summary_stats,
-            'first_rows': first_rows
-        })
-    else:
-        return jsonify({'error': 'Invalid file type'}), 400
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = Path(app.config['UPLOAD_FOLDER']) / filename
+            file.save(file_path)
+            g.global_data = pd.read_csv(file_path)
+            return redirect(url_for('render_dash'))
+    return render_template('index.html', title='FoodYum Dashboard')
 
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ['csv']
-
-
-def secure_filename(filename):
-    return filename
-
-
-# Route to handle chat messages
-@app.route('/chat', methods=['POST'])
-def chat():
-    user_message = request.json.get('message')
-    if not user_message:
-        return jsonify({'reply': 'Sorry, I did not understand that.'}), 400
-
-    # Simulate a bot response (you can replace this with more complex logic)
-    bot_reply = f"You said: {user_message}"
-
-    return jsonify({'reply': bot_reply})
-
-
-# Route to generate dashboard
-@app.route('/dashboard', methods=['POST'])
-def dashboard():
-    data = request.json.get('data')
-    if not data:
-        return jsonify({'error': 'No data provided'}), 400
-
-    df = pd.DataFrame(data)
-
-    # Example plot
-    plt.figure(figsize=(10, 6))
-    sns.histplot(df.select_dtypes(include=['number']).iloc[:, 0])
-    plot_path = os.path.join('static', 'plot.png')
-    plt.savefig(plot_path)
-
-    return jsonify({'plot_url': plot_path})
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 if __name__ == '__main__':
-    os.makedirs('uploads', exist_ok=True)
     app.run(debug=True)
