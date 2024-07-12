@@ -272,4 +272,4 @@ def update_pie_chart(feature_col, data):
 
 
 if __name__ == '__main__':
-    dash_app.run_server(debug=True)
+    dash_app.run_server()
