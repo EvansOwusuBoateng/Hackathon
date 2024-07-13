@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash
 from werkzeug.utils import secure_filename
 import os
 import secrets
@@ -11,12 +11,15 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = secrets.token_hex(16)  # Set a unique and secret key
 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/')
 def index():
     return render_template('index.html', title='AnalytiCore')
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -37,11 +40,12 @@ def upload_file():
             os.makedirs(app.config['UPLOAD_FOLDER'])
 
         file.save(file_path)
-        return redirect(url_for('dash_app') + f'?file_path={file_path}')
+        return redirect('/')  # Redirect to the Dash application's URL
 
     flash('Allowed file types are csv')
     return redirect(request.url)
 
+
 if __name__ == '__main__':
     dash_app = create_dash_app(app)
-    app.run()
+    app.run(debug=True)  # Run the Flask application in debug mode for troubleshooting
