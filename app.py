@@ -48,4 +48,4 @@ def upload_file():
 
 if __name__ == '__main__':
     dash_app = create_dash_app(app)
-    app.run(debug=True)  # Run the Flask application in debug mode for troubleshooting
+    app.run()  # Run the Flask application in debug mode for troubleshooting
