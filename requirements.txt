@@ -29,3 +29,4 @@ tenacity~=8.4.2
 kaleido~=0.2.1
 packaging~=24.1
 gunicorn
+dash-bootstrap-components
