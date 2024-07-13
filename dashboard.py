@@ -1,4 +1,3 @@
-import pandas as pd
 from dash import Dash, dcc, html, dash_table
 from dash.dependencies import Input, Output
 import plotly.express as px
@@ -103,70 +102,96 @@ def create_dash_app(flask_app):
         [Input('url', 'search')]
     )
     def update_dropdowns(search):
-        file_path = search.split('=')[1]
-        data, null_values, duplicate_rows = wrangle(file_path)
-        columns = [{'label': col, 'value': col} for col in data.columns]
-        return (columns, columns[0]['value'], columns, columns[1]['value'], columns, [columns[0]['value']],
-                columns, columns[0]['value'], columns, columns[0]['value'], columns, columns[1]['value'],
-                columns, columns[0]['value'], columns, columns[1]['value'], columns, columns[0]['value'],
-                f"Number of Duplicate Rows: {duplicate_rows}")
+        if search and '=' in search:
+            file_path = search.split('=')[1]
+            data, null_values, duplicate_rows = wrangle(file_path)
+            columns = [{'label': col, 'value': col} for col in data.columns]
+            return (columns, columns[0]['value'], columns, columns[1]['value'], columns, [columns[0]['value']],
+                    columns, columns[0]['value'], columns, columns[0]['value'], columns, columns[1]['value'],
+                    columns, columns[0]['value'], columns, columns[1]['value'], columns, columns[0]['value'],
+                    f"Number of Duplicate Rows: {duplicate_rows}")
+        else:
+            return ([], None, [], None, [], [],
+                    [], None, [], None, [], None,
+                    [], None, [], None, [], None,
+                    "")
 
     @app.callback(
         Output('data-overview', 'children'),
         [Input('url', 'search'), Input('num-rows-dropdown', 'value')])
     def update_data_overview(search, num_rows):
-        file_path = search.split('=')[1]
-        data, null_values, duplicate_rows = wrangle(file_path)
-        return create_data_overview_table(data, num_rows)
+        if search and '=' in search:
+            file_path = search.split('=')[1]
+            data, null_values, duplicate_rows = wrangle(file_path)
+            return create_data_overview_table(data, num_rows)
+        else:
+            return []  # Return an empty table or a default message
 
     @app.callback(
         Output('correlation-graph', 'figure'),
         [Input('url', 'search'), Input('correlation-x-axis', 'value'), Input('correlation-y-axis', 'value')])
     def update_correlation_graph(search, x_axis, y_axis):
-        file_path = search.split('=')[1]
-        data, null_values, duplicate_rows = wrangle(file_path)
-        return px.scatter(data, x=x_axis, y=y_axis, title='Correlation Graph')
+        if search and '=' in search:
+            file_path = search.split('=')[1]
+            data, null_values, duplicate_rows = wrangle(file_path)
+            return px.scatter(data, x=x_axis, y=y_axis, title='Correlation Graph')
+        else:
+            return {}  # Return an empty figure or a default message
 
     @app.callback(
         Output('bar-chart', 'figure'),
         [Input('url', 'search'), Input('bar-chart-dropdown', 'value')])
     def update_bar_chart(search, selected_columns):
-        file_path = search.split('=')[1]
-        data, null_values, duplicate_rows = wrangle(file_path)
-        return px.bar(data[selected_columns])
+        if search and '=' in search:
+            file_path = search.split('=')[1]
+            data, null_values, duplicate_rows = wrangle(file_path)
+            return px.bar(data[selected_columns])
+        else:
+            return {}  # Return an empty figure or a default message
 
     @app.callback(
         Output('histogram-container', 'children'),
         [Input('url', 'search'), Input('histogram-dropdown', 'value')])
     def update_histogram(search, x_col):
-        file_path = search.split('=')[1]
-        data, null_values, duplicate_rows = wrangle(file_path)
-        return create_histogram(data, x_col, f'Histogram of {x_col}')
+        if search and '=' in search:
+            file_path = search.split('=')[1]
+            data, null_values, duplicate_rows = wrangle(file_path)
+            return create_histogram(data, x_col, f'Histogram of {x_col}')
+        else:
+            return []  # Return an empty chart or a default message
 
     @app.callback(
         Output('box-plot-container', 'children'),
         [Input('url', 'search'), Input('box-plot-x-dropdown', 'value'), Input('box-plot-y-dropdown', 'value')])
     def update_box_plot(search, x_col, y_col):
-        file_path = search.split('=')[1]
-        data, null_values, duplicate_rows = wrangle(file_path)
-        return create_box_plot(data, x_col, y_col, f'Box Plot of {y_col} by {x_col}')
+        if search and '=' in search:
+            file_path = search.split('=')[1]
+            data, null_values, duplicate_rows = wrangle(file_path)
+            return create_box_plot(data, x_col, y_col, f'Box Plot of {y_col} by {x_col}')
+        else:
+            return []  # Return an empty chart or a default message
 
     @app.callback(
         Output('line-chart-container', 'children'),
-        [Input('url', 'search'), Input('line-chart-x-dropdown', 'value'),
-         Input('line-chart-y-dropdown', 'value')])
+        [Input('url', 'search'), Input('line-chart-x-dropdown', 'value'), Input('line-chart-y-dropdown', 'value')])
     def update_line_chart(search, x_col, y_col):
-        file_path = search.split('=')[1]
-        data, null_values, duplicate_rows = wrangle(file_path)
-        return create_line_chart(data, x_col, y_col, f'Line Chart of {y_col} over {x_col}')
+        if search and '=' in search:
+            file_path = search.split('=')[1]
+            data, null_values, duplicate_rows = wrangle(file_path)
+            return create_line_chart(data, x_col, y_col, f'Line Chart of {y_col} over {x_col}')
+        else:
+            return []  # Return an empty chart or a default message
 
     @app.callback(
         Output('pie-chart-container', 'children'),
         [Input('url', 'search'), Input('pie-chart-dropdown', 'value')])
     def update_pie_chart(search, feature_col):
-        file_path = search.split('=')[1]
-        data, null_values, duplicate_rows = wrangle(file_path)
-        return create_pie_chart(data, feature_col, f'Distribution of {feature_col}')
+        if search and '=' in search:
+            file_path = search.split('=')[1]
+            data, null_values, duplicate_rows = wrangle(file_path)
+            return create_pie_chart(data, feature_col, f'Distribution of {feature_col}')
+        else:
+            return []  # Return an empty chart or a default message
 
     return app
 
