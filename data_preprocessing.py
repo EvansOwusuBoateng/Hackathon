@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
 
+def wrangle(file_path):
+    # Load the CSV file into a DataFrame
+    df = pd.read_csv(file_path)
 
-def wrangle(df):
     # Print the number of null values in the data
     null_values = df.isnull().sum()
 
@@ -18,28 +20,8 @@ def wrangle(df):
             try:
                 df[col] = pd.to_datetime(df[col])
             except ValueError:
-                # Handle date columns with only month and day
-                try:
-                    df[col] = pd.to_datetime(df[col], format='%m/%d')
-                except ValueError:
-                    # Handle date columns with only year and month
-                    try:
-                        df[col] = pd.to_datetime(df[col], format='%Y-%m')
-                    except ValueError:
-                        # Handle date columns with only year
-                        try:
-                            df[col] = pd.to_datetime(df[col], format='%Y')
-                        except ValueError:
-                            # Handle date columns with month and year
-                            try:
-                                df[col] = pd.to_datetime(df[col], format='%b %Y')
-                            except ValueError:
-                                # Handle date columns with month name and day
-                                try:
-                                    df[col] = pd.to_datetime(df[col], format='%b %d')
-                                except ValueError:
-                                    # Handle date columns with day, month name, and year
-                                    df[col] = pd.to_datetime(df[col], format='%d %b %Y')
+                # Handle various date formats
+                pass  # This could include additional handling as needed
 
             # Set the date column as the index
             df = df.set_index(col)
